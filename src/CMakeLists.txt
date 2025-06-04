@@ -25,9 +25,13 @@ set_target_properties(xm PROPERTIES
 # Bump this when breaking public ABI
 set_target_properties(xm PROPERTIES SOVERSION 8)
 
-find_library(MATH_LIBRARY m REQUIRED)
 target_include_directories(xm SYSTEM PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(xm PRIVATE xm_common ${MATH_LIBRARY})
+if(MSVC) # MSVC includes builtin math
+    target_link_libraries(xm PRIVATE xm_common)
+else()
+    find_library(MATH_LIBRARY m REQUIRED)
+    target_link_libraries(xm PRIVATE xm_common ${MATH_LIBRARY})
+endif()
 
 function(option_and_define name description default_value)
 	option(${name} ${description} ${default_value})
